@@ -1,16 +1,25 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"belajar-gofiber-gorm/database"
+	"belajar-gofiber-gorm/database/migration"
+	"belajar-gofiber-gorm/routes"
+
+	"github.com/gofiber/fiber/v2"
+
+)
 
 func main() {
+	// INITIAL DATABASE
+	database.DatabaseInit()
+
+	//  RUN MIGRATION
+	migration.RunMigration()
+
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(500).JSON(fiber.Map{
-			"message": "Hello World",
-		})
-		//return c.SendString("Hello World!")
-	})
+	// INITIAL ROUTE
+	routes.RouteInit(app)
 
 	app.Listen(":4000")
 }
