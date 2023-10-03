@@ -60,3 +60,19 @@ func UserControllerCreate(c *fiber.Ctx) error {
 		"data":    newUser,
 	})
 }
+
+func UserControllerGetById(c *fiber.Ctx) error {
+	userId := c.Params("id")
+
+	var user entity.User
+	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "no data with id " + userId,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "success fetching data",
+		"data":    user,
+	})
+}

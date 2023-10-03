@@ -15,5 +15,5 @@ type User struct {
 	Phone     string         `json:"phone"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"update_at"`
-	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index,column:deleted_at"`
 }
