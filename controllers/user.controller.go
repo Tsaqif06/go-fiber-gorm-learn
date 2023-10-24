@@ -31,7 +31,9 @@ func UserControllerCreate(c *fiber.Ctx) error {
 	user := new(request.UserCreateRequest)
 
 	if err := c.BodyParser(user); err != nil {
-		return err
+		return c.Status(400).JSON(fiber.Map{
+			"message": "bad request",
+		})
 	}
 
 	validate := validator.New()
@@ -66,6 +68,7 @@ func UserControllerGetById(c *fiber.Ctx) error {
 
 	var user entity.User
 	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
+		// SELECT * FROM users WHERE id = userId;
 		return c.Status(404).JSON(fiber.Map{
 			"message": "no data with id " + userId,
 		})
@@ -73,6 +76,43 @@ func UserControllerGetById(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "success fetching data",
+		"data":    user,
+	})
+}
+
+func UserControllerUpdate(c *fiber.Ctx) error {
+	userReq := new(request.UserUpdateRequest)
+
+	if err := c.BodyParser(userReq); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": "bad request",
+		})
+	}
+
+	userId := c.Params("id")
+
+	var user entity.User
+	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
+		// SELECT * FROM users WHERE id = userId;
+		return c.Status(404).JSON(fiber.Map{
+			"message": "no data with id " + userId,
+		})
+	}
+
+	// UPDATE USER DATA
+	if userReq.Name != "" {
+		user.Name = userReq.Name
+	}
+	user.Address = userReq.Address
+	user.Phone = userReq.Phone
+	if errUpdate := database.DB.Save(&user).Error; errUpdate != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "success update data",
 		"data":    user,
 	})
 }
