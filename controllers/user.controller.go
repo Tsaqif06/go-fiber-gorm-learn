@@ -89,9 +89,9 @@ func UserControllerUpdate(c *fiber.Ctx) error {
 		})
 	}
 
+	var user entity.User
 	userId := c.Params("id")
 
-	var user entity.User
 	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
 		// SELECT * FROM users WHERE id = userId;
 		return c.Status(404).JSON(fiber.Map{
@@ -105,6 +105,46 @@ func UserControllerUpdate(c *fiber.Ctx) error {
 	}
 	user.Address = userReq.Address
 	user.Phone = userReq.Phone
+	if errUpdate := database.DB.Save(&user).Error; errUpdate != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "success update data",
+		"data":    user,
+	})
+}
+
+func UserControllerUpdateEmail(c *fiber.Ctx) error {
+	userReq := new(request.UserEmailRequest)
+
+	if err := c.BodyParser(userReq); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"message": "bad request",
+		})
+	}
+
+	var user entity.User
+	var isEmailUserExist entity.User
+	userId := c.Params("id")
+
+	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
+		// SELECT * FROM users WHERE id = userId;
+		return c.Status(404).JSON(fiber.Map{
+			"message": "no data with id " + userId,
+		})
+	}
+
+	if errCheckEmail := database.DB.First(&isEmailUserExist, "email = ?", userReq.Email).Error; errCheckEmail != nil {
+		// SELECT * FROM users WHERE id = userId;
+		return c.Status(404).JSON(fiber.Map{
+			"message": userReq.Email + " already used",
+		})
+	}
+
+	user.Email = userReq.Email
 	if errUpdate := database.DB.Save(&user).Error; errUpdate != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"message": "internal server error",
