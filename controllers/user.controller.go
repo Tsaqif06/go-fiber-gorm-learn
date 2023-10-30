@@ -137,7 +137,7 @@ func UserControllerUpdateEmail(c *fiber.Ctx) error {
 		})
 	}
 
-	if errCheckEmail := database.DB.First(&isEmailUserExist, "email = ?", userReq.Email).Error; errCheckEmail != nil {
+	if errCheckEmail := database.DB.First(&isEmailUserExist, "email = ?", userReq.Email).Error; errCheckEmail == nil {
 		// SELECT * FROM users WHERE id = userId;
 		return c.Status(404).JSON(fiber.Map{
 			"message": userReq.Email + " already used",
