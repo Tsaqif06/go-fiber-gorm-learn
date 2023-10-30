@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+
 )
 
 func UserControllerGetAll(c *fiber.Ctx) error {
@@ -154,5 +155,27 @@ func UserControllerUpdateEmail(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"message": "success update data",
 		"data":    user,
+	})
+}
+
+func UserControllerDelete(c *fiber.Ctx) error {
+	userId := c.Params("id")
+	var user entity.User
+
+	if err := database.DB.First(&user, "id = ?", userId).Error; err != nil {
+		// SELECT * FROM users WHERE id = userId;
+		return c.Status(404).JSON(fiber.Map{
+			"message": "no data with id " + userId,
+		})
+	}
+
+	if errDelete := database.DB.Delete(&user).Error; errDelete != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "user with id " + userId + " has been deleted",
 	})
 }
