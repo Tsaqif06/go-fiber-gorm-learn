@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"belajar-gofiber-gorm/database"
@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
-
 )
 
 func UserControllerGetAll(c *fiber.Ctx) error {
@@ -46,10 +45,11 @@ func UserControllerCreate(c *fiber.Ctx) error {
 	}
 
 	newUser := entity.User{
-		Name:    user.Name,
-		Email:   user.Email,
-		Address: user.Address,
-		Phone:   user.Phone,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+		Address:  user.Address,
+		Phone:    user.Phone,
 	}
 
 	if errCreateUser := database.DB.Create(&newUser).Error; errCreateUser != nil {

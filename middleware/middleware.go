@@ -3,7 +3,7 @@ package middleware
 import "github.com/gofiber/fiber/v2"
 
 func Auth(c *fiber.Ctx) error {
-	if token := c.Get("x-token"); token != "secret" {
+	if token := c.Get("x-token"); token != "chelsea" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthorized",
 		})
