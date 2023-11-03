@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/gofiber/fiber/v2 v2.49.1
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	golang.org/x/crypto v0.14.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/gorm v1.25.4
