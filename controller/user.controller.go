@@ -4,10 +4,12 @@ import (
 	"belajar-gofiber-gorm/database"
 	"belajar-gofiber-gorm/model/entity"
 	"belajar-gofiber-gorm/model/request"
+	"belajar-gofiber-gorm/utils"
 	"log"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
+
 )
 
 func UserControllerGetAll(c *fiber.Ctx) error {
@@ -45,12 +47,21 @@ func UserControllerCreate(c *fiber.Ctx) error {
 	}
 
 	newUser := entity.User{
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
-		Address:  user.Address,
-		Phone:    user.Phone,
+		Name:    user.Name,
+		Email:   user.Email,
+		Address: user.Address,
+		Phone:   user.Phone,
 	}
+
+	hashedPassword, err := utils.HashingPassword(user.Password); 
+	if err != nil {
+		log.Println(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	newUser.Password = hashedPassword
 
 	if errCreateUser := database.DB.Create(&newUser).Error; errCreateUser != nil {
 		return c.Status(500).JSON(fiber.Map{

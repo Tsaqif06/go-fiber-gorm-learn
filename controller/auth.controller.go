@@ -4,6 +4,7 @@ import (
 	"belajar-gofiber-gorm/database"
 	"belajar-gofiber-gorm/model/entity"
 	"belajar-gofiber-gorm/model/request"
+	"belajar-gofiber-gorm/utils"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
@@ -30,6 +31,13 @@ func LoginController(c *fiber.Ctx) error {
 	if err := database.DB.First(&user, "email = ?", loginRequest.Email).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{
 			"message": "no data with email " + loginRequest.Email,
+		})
+	}
+
+	// VALIDATION PASSWORD
+	if isValid := utils.CheckPasswordHash(loginRequest.Password, user.Password); !isValid {
+		return c.Status(404).JSON(fiber.Map{
+			"message": "wrong password!",
 		})
 	}
 
