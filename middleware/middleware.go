@@ -1,9 +1,20 @@
 package middleware
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"belajar-gofiber-gorm/utils"
+
+	"github.com/gofiber/fiber/v2"
+)
 
 func Auth(c *fiber.Ctx) error {
-	if token := c.Get("x-token"); token != "chelsea" {
+	token := c.Get("x-token")
+	if token == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "unauthorized",
+		})
+	}
+	_, err := utils.VerifyToken(token)
+	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthorized",
 		})
