@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+
 )
 
 func LoginController(c *fiber.Ctx) error {
@@ -51,6 +52,12 @@ func LoginController(c *fiber.Ctx) error {
 	claims["email"] = user.Email
 	claims["address"] = user.Address
 	claims["exp"] = time.Now().Add(time.Minute * 2).Unix()
+
+	if user.Email == "test@gmail.com" {
+		claims["role"] = "admin"
+	} else {
+		claims["role"] = "user"
+	}
 
 	token, errGenerateToken := utils.GenerateToken(&claims)
 	if errGenerateToken != nil {

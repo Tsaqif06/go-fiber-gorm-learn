@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
-
 )
 
 var SecretKey = "SECRET_TOKEN"
@@ -30,4 +29,18 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 		return nil, err
 	}
 	return token, nil
+}
+
+func DecodeToken(tokenString string) (jwt.MapClaims, error) {
+	token, err := VerifyToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	claims, isOk := token.Claims.(jwt.MapClaims)
+	if isOk && token.Valid {
+		return claims, nil
+	}
+
+	return nil, fmt.Errorf("invalid token")
 }

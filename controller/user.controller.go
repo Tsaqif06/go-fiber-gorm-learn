@@ -9,12 +9,11 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
-
 )
 
 func UserControllerGetAll(c *fiber.Ctx) error {
-	// //userInfo := ctx.Locals("userInfo").(jwt.MapClaims)
-	// //log.Println("email :: ", userInfo["email"])
+	// userInfo := c.Locals("userInfo")
+	// log.Println("user info data :: ", userInfo)
 
 	var users []entity.User
 	if result := database.DB.Find(&users); result.Error != nil {
@@ -53,7 +52,7 @@ func UserControllerCreate(c *fiber.Ctx) error {
 		Phone:   user.Phone,
 	}
 
-	hashedPassword, err := utils.HashingPassword(user.Password); 
+	hashedPassword, err := utils.HashingPassword(user.Password)
 	if err != nil {
 		log.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

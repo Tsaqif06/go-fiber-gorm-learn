@@ -13,12 +13,21 @@ func Auth(c *fiber.Ctx) error {
 			"message": "unauthorized",
 		})
 	}
-	_, err := utils.VerifyToken(token)
+	claims, err := utils.DecodeToken(token)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthorized",
 		})
 	}
+
+	role := claims["role"].(string)
+	if role != "admin" {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"message": "forbidden access",
+		})
+	}
+
+	// c.Locals("userInfo", claims)
 
 	return c.Next()
 }
