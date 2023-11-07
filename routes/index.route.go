@@ -19,4 +19,6 @@ func RouteInit(r *fiber.App) {
 	r.Put("/user/:id", controller.UserControllerUpdate)
 	r.Put("/user/:id/update-email", controller.UserControllerUpdateEmail)
 	r.Delete("/user/:id", controller.UserControllerDelete)
+
+	r.Post("/book", controller.BookControllerCreate)
 }
