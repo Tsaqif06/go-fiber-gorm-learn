@@ -4,12 +4,14 @@ import (
 	"belajar-gofiber-gorm/config"
 	"belajar-gofiber-gorm/controller"
 	"belajar-gofiber-gorm/middleware"
+	"belajar-gofiber-gorm/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func RouteInit(r *fiber.App) {
 	r.Static("/public", config.ProjectRootPath+"/public/assets")
+	r.Static("/bookcover", config.ProjectRootPath+"/public/covers")
 
 	r.Post("/login", controller.LoginController)
 
@@ -20,5 +22,5 @@ func RouteInit(r *fiber.App) {
 	r.Put("/user/:id/update-email", controller.UserControllerUpdateEmail)
 	r.Delete("/user/:id", controller.UserControllerDelete)
 
-	r.Post("/book", controller.BookControllerCreate)
+	r.Post("/book", utils.HandleSingleFile, controller.BookControllerCreate)
 }

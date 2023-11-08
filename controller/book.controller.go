@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
-
 )
 
 func BookControllerGetAll(c *fiber.Ctx) error {
@@ -38,26 +37,20 @@ func BookControllerCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	// HANDLE FILE
-	file, errFile := c.FormFile("cover")
-	if errFile != nil {
-		log.Println("error file = ", errFile)
+	// Validation Required Image
+	filename := c.Locals("filename")
+	if filename == nil {
+		return c.Status(422).JSON(fiber.Map{
+			"message": "image cover is required",
+		})
 	}
 
-	var filename string
-	if file != nil {
-		filename = file.Filename
-		if errSaveFile := c.SaveFile(file, fmt.Sprintf("./public/covers/%s", filename)); errSaveFile != nil {
-			log.Println("fail to store file")
-		}
-	} else {
-		log.Println("nothing files to be uploaded")
-	}
+	filenameString := fmt.Sprintf("%v", filename)
 
 	newBook := entity.Book{
 		Title:  book.Title,
 		Author: book.Author,
-		Cover:  filename,
+		Cover:  filenameString,
 	}
 
 	if errCreatebook := database.DB.Create(&newBook).Error; errCreatebook != nil {
